@@ -300,21 +300,21 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant E as Employee (Browser)
+    participant E as Employee Browser
     participant FE as Next.js
     participant API as Express API
     participant DB as PostgreSQL
 
-    E->>FE: Opens dashboard, taps "Clock in"
-    FE->>API: POST /api/attendance/clock-in {note?, location?} (Bearer token)
-    API->>API: authenticate → validate(Zod) → rate limit
-    API->>API: Service: now = server time; check active; IP allowed; no open entry
+    E->>FE: Opens dashboard and taps Clock in
+    FE->>API: POST /api/attendance/clock-in with note and location
+    API->>API: Authenticate, validate with Zod, and rate limit
+    API->>API: Check server time, active status, IP allowed, and no open entry
     API->>API: Calculate work date in company timezone and load shift
     API->>API: Calculate late minutes from shift start plus grace period
-    API->>DB: Transaction: create TimeEntry + upsert AttendanceDay + audit log
+    API->>DB: Transaction creates TimeEntry, upserts AttendanceDay, and writes audit log
     DB-->>API: OK
-    API-->>FE: 201 Created {clockInAt, lateMinutes, status}
-    FE-->>E: "Clocked in at 09:04 — 4 min late"
+    API-->>FE: 201 Created with clockInAt, lateMinutes, and status
+    FE-->>E: Clocked in at 09:04 - 4 min late
 ```
 
 **Why a transaction:** The time entry, the daily summary and the audit entry are saved together. If any part fails, nothing is saved, so you never get a punch without a day record.
