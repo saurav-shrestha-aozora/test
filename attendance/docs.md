@@ -308,7 +308,7 @@ sequenceDiagram
     E->>FE: Opens dashboard, taps "Clock in"
     FE->>API: POST /api/attendance/clock-in {note?, location?} (Bearer token)
     API->>API: authenticate → validate(Zod) → rate limit
-    API->>API: Service: now = server time; check active, IP allowed, no open entry
+    API->>API: Service: now = server time; check active; IP allowed; no open entry
     API->>API: Work date = now in company timezone; load shift; late = now − (shift start + grace)
     API->>DB: Transaction: create TimeEntry + upsert AttendanceDay + audit log
     DB-->>API: OK
